@@ -1832,28 +1832,38 @@ long    rtbth_us_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned lo
 
                 if (copy_from_user(&dmac, (void *)arg, sizeof(dmac))) {
                     retval = -EFAULT;
-                    DebugPrint(ERROR, DBG_INIT,"copy_from_user failed at %d\n", __LINE__);
+                    DebugPrint(ERROR, DBG_INIT,
+                               "copy_from_user failed at %d\n", __LINE__);
                     break;
                 }
-                DebugPrint(ERROR, DBG_INIT,"RTBTH_IOCDMAC: dmac.dmac_op=%d\n", dmac.dmac_op);
+                DebugPrint(ERROR, DBG_INIT,
+                           "RTBTH_IOCDMAC: dmac.dmac_op=%d\n", dmac.dmac_op);
 
                 if(dmac.dmac_op == 0){
                     RtbtResetPDMA(gpAd);
-                }else if(dmac.dmac_op == 1){
+                }
+
+                if(dmac.dmac_op == 1){
                     BthEnableRxTx(gpAd);
-                }else if(dmac.dmac_op == 2){
-                    DebugPrint(TRACE, DBG_MISC, "%s:kfifo reset ==>\n", __func__);
+                }
+
+                if(dmac.dmac_op == 2){
+                    DebugPrint(
+                        TRACE, DBG_MISC, "%s:kfifo reset ==>\n", __func__);
                     kfifo_reset(gpAd->acl_fifo);
                     kfifo_reset(gpAd->hci_fifo);
                     kfifo_reset(gpAd->evt_fifo);
                     kfifo_reset(gpAd->sco_fifo);
                     kfifo_reset(gpAd->rx_fifo);
-                    DebugPrint(TRACE, DBG_MISC, "%s:kfifo reset <== \n", __func__);
+                    DebugPrint(
+                        TRACE, DBG_MISC, "%s:kfifo reset <== \n", __func__);
                 }
-                else {
-                     DebugPrint(ERROR, DBG_INIT,"No such the dma op = %d\n", dmac.dmac_op);
+
+                if(dmac.dmac_op > 2){
+                    DebugPrint(
+                        ERROR, DBG_INIT, "No such dmac op=%d\n", dmac.dmac_op);
                 }
-            }while(0);
+            } while(0);
             break;
 #if 1
         case RTBTH_IOCRMODE:
